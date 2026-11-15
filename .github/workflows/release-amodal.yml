@@ -29,6 +29,7 @@ jobs:
       - name: Build matching engine
         run: |
           cargo test -p casual-calc-layout chart_line_height_is_twips_but_font_size_is_points
+          cargo test -p casual-calc-export amodal_retitle_saved_chart_does_not_duplicate_its_anchor
           rustup target add wasm32-unknown-unknown
           cargo install wasm-pack --version 0.15.0 --locked
           wasm-pack build crates/casual-calc-wasm --release --target web --out-dir pkg

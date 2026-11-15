@@ -39,4 +39,13 @@ test("matching packaged engine calculates, saves and reopens without network imp
   api.session_open(bytes);
   assert.equal(api.session_cell_input(0, 0, 1), "=A1*3");
   assert.equal(JSON.parse(api.session_cells(0, 0, 0, 0, 1))[1].t, "15");
+  api.session_create_chart(0, 0, 0, 0, 1, "column");
+  api.session_open(api.session_save());
+  const chart = JSON.parse(api.session_chart_defs(0))[0];
+  chart.title = "Retitled after reopening";
+  api.session_set_chart(0, 0, JSON.stringify(chart));
+  api.session_open(api.session_save());
+  const charts = JSON.parse(api.session_chart_defs(0));
+  assert.equal(charts.length, 1);
+  assert.equal(charts[0].title, "Retitled after reopening");
 });

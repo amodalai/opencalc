@@ -5914,3 +5914,21 @@ fn a_note_is_written_with_excel_s_author_line() {
     assert_eq!(back.sheets[0].comments[0].text, "check the total");
     assert_eq!(back.sheets[0].comments[1].text, "unsigned");
 }
+
+#[test]
+fn amodal_retitle_saved_chart_does_not_duplicate_its_anchor() {
+    let original = write_workbook(&authored_chart_workbook()).unwrap();
+    let mut workbook = import_package(original).unwrap().workbook;
+    let old_part = workbook.sheets[0].charts[0].detach().unwrap();
+    workbook.sheets[0].charts[0].title = "Revised revenue".into();
+    // The metadata transaction removes the detached part and relationship,
+    // while retaining the drawing so unrelated shapes survive.
+    workbook.retained_parts.retain(|part| part.path != old_part);
+    workbook
+        .retained_rels
+        .retain(|rel| !rel.target.ends_with("charts/chart1.xml"));
+    let bytes = write_workbook(&workbook).unwrap();
+    let reopened = import_package(bytes).unwrap().workbook;
+    assert_eq!(reopened.sheets[0].charts.len(), 1);
+    assert_eq!(reopened.sheets[0].charts[0].title, "Revised revenue");
+}

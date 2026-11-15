@@ -202,13 +202,14 @@ pub fn build(
         }
     }
 
-    // Every relationship the drawing will actually have once it is written.
+    // Only retained relationships may keep an old anchor alive. A new chart
+    // can reuse a deleted relationship ID; including new IDs here resurrects
+    // the old anchor and duplicates the replacement chart after reopening.
     let known: Vec<String> = workbook
         .retained_rels
         .iter()
         .filter(|r| r.source == drawing_part)
         .map(|r| r.id.clone())
-        .chain(rel_ids.iter().cloned())
         .collect();
     let retained = retained_bytes(workbook, &drawing_part);
     let drawing_xml = match &retained {
