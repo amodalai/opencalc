@@ -712,3 +712,5 @@ thirteen.
 | AMODAL-003 | Prevent duplicate anchors when retitling saved charts | Done | docs/104-AMODAL-EMBED.md |
 
 | AMODAL-004 | Reserve existing chart part paths when adding charts | Done | docs/104-AMODAL-EMBED.md |
+
+| AMODAL-005 | Match browser pie/doughnut angles to rendered previews | Done | docs/104-AMODAL-EMBED.md |

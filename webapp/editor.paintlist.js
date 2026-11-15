@@ -97,8 +97,10 @@ function wedge(ctx, v, u) {
   const r = v.radius * u.geo;
   if (!(r > 0)) return;
   const inner = v.innerRadius > 0 ? v.innerRadius * u.geo : 0;
-  const from = v.from;
-  const to = v.from + v.sweep;
+  // Display-list angles are clockwise degrees from twelve o'clock.
+  // Canvas arc() takes radians from three o'clock.
+  const from = (v.from * Math.PI) / 180 - Math.PI / 2;
+  const to = from + (v.sweep * Math.PI) / 180;
   ctx.save();
   ctx.fillStyle = css(v.fill);
   ctx.beginPath();

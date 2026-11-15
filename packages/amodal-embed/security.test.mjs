@@ -52,3 +52,20 @@ test("matching packaged engine calculates, saves and reopens without network imp
   api.session_open(api.session_save());
   assert.deepEqual(JSON.parse(api.session_chart_defs(0)).map(c => c.kind), ["column", "pie"]);
 });
+
+
+test("canvas pie wedges convert degrees to radians without drawing full circles", async () => {
+  const source = (await read("editor.paintlist.js")).replace('import { fontStack } from "./editor.paint.js";', 'const fontStack = value => value;');
+  const { paintList } = await import('data:text/javascript;base64,' + Buffer.from(source).toString('base64'));
+  const arcs = [];
+  const ctx = { save() {}, restore() {}, beginPath() {}, closePath() {}, fill() {}, moveTo() {}, arc(...args) { arcs.push(args); } };
+  paintList(ctx, { items: [
+    { wedge: { center: { x: 150, y: 150 }, radius: 150, innerRadius: 0, from: 0, sweep: 90, fill: "0000FF" } },
+    { wedge: { center: { x: 150, y: 150 }, radius: 150, innerRadius: 75, from: 90, sweep: 270, fill: "FF0000" } },
+  ] });
+  assert.equal(arcs[0][3], -Math.PI / 2);
+  assert.equal(arcs[0][4], 0);
+  assert.equal(arcs[1][3], 0);
+  assert.equal(arcs[1][4], Math.PI * 1.5);
+  assert.equal(arcs[2][5], true);
+});
