@@ -705,9 +705,9 @@ One question, in order:
 A new tracking document is never the answer. That is how there came to be
 thirteen.
 
-| AMODAL-001 | Amodal embedded package with restricted networking | In progress | docs/104-AMODAL-EMBED.md |
+| AMODAL-001 | Amodal embedded package with restricted networking | Done | docs/104-AMODAL-EMBED.md |
 
-| AMODAL-002 | Fix chart text unit conversion in headless previews | In progress | docs/104-AMODAL-EMBED.md |
+| AMODAL-002 | Fix chart text unit conversion in headless previews | Done | docs/104-AMODAL-EMBED.md |
 
 | AMODAL-003 | Prevent duplicate anchors when retitling saved charts | Done | docs/104-AMODAL-EMBED.md |
 
