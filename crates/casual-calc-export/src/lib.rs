@@ -269,8 +269,7 @@ fn write_unsigned(workbook: &Workbook, kind: PackageKind) -> Result<Vec<u8>, Exp
     let mut chart_builds: Vec<chart::SheetCharts> = Vec::new();
     let mut next_chart = 1;
     for (i, sheet) in workbook.sheets.iter().enumerate() {
-        if let Some(built) = chart::build(workbook, sheet, i, next_chart) {
-            next_chart += built.chart_parts.len();
+        if let Some(built) = chart::build(workbook, sheet, i, &mut next_chart) {
             chart_builds.push(built);
         } else {
             // A placeholder keeps the vector index equal to the sheet index,

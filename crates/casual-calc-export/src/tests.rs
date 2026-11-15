@@ -5049,6 +5049,7 @@ xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\">\
     /// is** — it changes only the anchor.
     fn opened_dragged_and_saved(chart: &[u8]) -> (casual_calc_model::Workbook, String) {
         let mut wb = import_package(package(chart)).unwrap().workbook;
+        let dropped;
         {
             let c = &mut wb.sheets[0].charts[0];
             assert!(c.part.is_some(), "the chart came from a file");
@@ -5058,8 +5059,13 @@ xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\">\
             );
             // What `session_set_chart` does on any edit: the retained part no
             // longer describes the chart, so it stops being authoritative.
-            c.detach();
+            dropped = c.detach().unwrap();
         }
+        // Match the metadata transaction's removal of the detached part and
+        // its relationship; retaining them would leave an extra stale chart.
+        wb.retained_parts.retain(|part| part.path != dropped);
+        wb.retained_rels
+            .retain(|rel| !rel.target.ends_with("charts/chart1.xml"));
         let written = write_workbook(&wb).unwrap();
         let part = xml_of(&written, "xl/charts/chart1.xml");
         (wb, part)
@@ -5931,4 +5937,29 @@ fn amodal_retitle_saved_chart_does_not_duplicate_its_anchor() {
     let reopened = import_package(bytes).unwrap().workbook;
     assert_eq!(reopened.sheets[0].charts.len(), 1);
     assert_eq!(reopened.sheets[0].charts[0].title, "Revised revenue");
+}
+
+#[test]
+fn amodal_new_chart_does_not_overwrite_retained_chart_parts() {
+    let original = write_workbook(&authored_chart_workbook()).unwrap();
+    let mut workbook = import_package(original).unwrap().workbook;
+    let mut added = workbook.sheets[0].charts[0].clone();
+    added.detach();
+    added.title = "New chart".into();
+    added.kind = casual_calc_model::ChartKind::Pie;
+    workbook.sheets[0].charts.push(added);
+    let reopened = import_package(write_workbook(&workbook).unwrap())
+        .unwrap()
+        .workbook;
+    assert_eq!(reopened.sheets[0].charts.len(), 2);
+    assert_eq!(reopened.sheets[0].charts[0].title, "Revenue & growth");
+    assert_eq!(
+        reopened.sheets[0].charts[0].kind,
+        casual_calc_model::ChartKind::Column
+    );
+    assert_eq!(reopened.sheets[0].charts[1].title, "New chart");
+    assert_eq!(
+        reopened.sheets[0].charts[1].kind,
+        casual_calc_model::ChartKind::Pie
+    );
 }

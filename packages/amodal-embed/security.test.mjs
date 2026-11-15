@@ -48,4 +48,7 @@ test("matching packaged engine calculates, saves and reopens without network imp
   const charts = JSON.parse(api.session_chart_defs(0));
   assert.equal(charts.length, 1);
   assert.equal(charts[0].title, "Retitled after reopening");
+  api.session_create_chart(0, 0, 0, 0, 1, "pie");
+  api.session_open(api.session_save());
+  assert.deepEqual(JSON.parse(api.session_chart_defs(0)).map(c => c.kind), ["column", "pie"]);
 });

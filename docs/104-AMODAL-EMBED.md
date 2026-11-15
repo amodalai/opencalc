@@ -34,3 +34,5 @@ Add a direct display-list regression asserting 12px text uses 9pt and 180-twip
 line height, then verify the same chart through the rebuilt headless renderer.
 
 Chart export strips obsolete retained anchors before adding replacement relationships, preventing duplicate charts when a saved chart is retitled. Regression: `amodal_retitle_saved_chart_does_not_duplicate_its_anchor`.
+
+New chart part numbers skip all retained chart paths across the workbook, so adding a chart after reopening cannot replace an existing chart. Regression: `amodal_new_chart_does_not_overwrite_retained_chart_parts`.

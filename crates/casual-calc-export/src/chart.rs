@@ -133,7 +133,7 @@ fn resolve_rel_target(source: &str, target: &str) -> String {
 
 /// Build every part a sheet's authored charts need.
 ///
-/// `first_chart` is the 1-based number of this sheet's first chart part, so
+/// `next_chart` allocates workbook-wide part numbers, skipping retained paths, so
 /// numbering runs across the workbook the way Excel's does.
 ///
 /// Also returns a rebuilt drawing for a sheet with *no* authored charts, when
@@ -143,7 +143,7 @@ pub fn build(
     workbook: &Workbook,
     sheet: &Sheet,
     sheet_index: usize,
-    first_chart: usize,
+    next_chart: &mut usize,
 ) -> Option<SheetCharts> {
     let charts = authored(sheet);
     let sheet_part = format!("xl/worksheets/sheet{}.xml", sheet_index + 1);
@@ -176,9 +176,20 @@ pub fn build(
     }
 
     let mut chart_parts = Vec::new();
+    let mut chart_numbers = Vec::new();
     let mut anchors = String::new();
     for (i, chart) in charts.iter().enumerate() {
-        let n = first_chart + i;
+        // Imported chart paths must remain reserved, including on other sheets.
+        while workbook
+            .retained_parts
+            .iter()
+            .any(|part| part.path == format!("xl/charts/chart{}.xml", *next_chart))
+        {
+            *next_chart += 1;
+        }
+        let n = *next_chart;
+        *next_chart += 1;
+        chart_numbers.push(n);
         chart_parts.push((format!("xl/charts/chart{n}.xml"), chart_xml(chart)));
         anchors.push_str(&anchor_xml(chart, &rel_ids[i], n));
     }
@@ -250,7 +261,7 @@ pub fn build(
         rels.push_str(&format!(
             "<Relationship Id=\"{}\" Type=\"{NS_R}/chart\" Target=\"../charts/chart{}.xml\"/>",
             escape_attr(id),
-            first_chart + i
+            chart_numbers[i]
         ));
     }
     rels.push_str("</Relationships>");

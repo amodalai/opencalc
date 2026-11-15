@@ -710,3 +710,5 @@ thirteen.
 | AMODAL-002 | Fix chart text unit conversion in headless previews | In progress | docs/104-AMODAL-EMBED.md |
 
 | AMODAL-003 | Prevent duplicate anchors when retitling saved charts | Done | docs/104-AMODAL-EMBED.md |
+
+| AMODAL-004 | Reserve existing chart part paths when adding charts | Done | docs/104-AMODAL-EMBED.md |
