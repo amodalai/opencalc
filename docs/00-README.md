@@ -180,3 +180,5 @@ settled here before it is implemented. It is no longer the source of truth for
 measured trackers above, and keep this section agreeing with
 [AGENTS.md](../AGENTS.md) §Current state and the phase table in
 [README.md](../README.md).
+
+| 104 | [Amodal embedding](104-AMODAL-EMBED.md) | Host-owned persistence and restricted editor package |

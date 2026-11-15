@@ -1,0 +1,48 @@
+name: Release Amodal OpenCalc
+on:
+  push:
+    tags: ["amodal-v*"]
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        type: boolean
+        default: true
+        description: Build and verify without publishing
+permissions:
+  contents: read
+  id-token: write
+concurrency:
+  group: release-amodal
+  cancel-in-progress: false
+jobs:
+  publish:
+    if: github.repository == 'amodalai/opencalc'
+    runs-on: ubuntu-latest
+    environment: release
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: "24"
+          registry-url: https://registry.npmjs.org
+      - name: Build matching engine
+        run: |
+          rustup target add wasm32-unknown-unknown
+          cargo install wasm-pack --version 0.15.0 --locked
+          wasm-pack build crates/casual-calc-wasm --release --target web --out-dir pkg
+      - name: Assemble and verify package
+        run: |
+          node packages/amodal-embed/build.mjs
+          node --test packages/amodal-embed/security.test.mjs
+          if [[ "$GITHUB_REF_TYPE" == tag ]]; then
+            test "$GITHUB_REF_NAME" = "amodal-v$(node -p "require('./packages/amodal-embed/package.json').version")"
+          fi
+          cd packages/amodal-embed
+          npm pack --dry-run
+      - name: Publish to npm
+        if: github.event_name == 'push' || inputs.dry_run == false
+        working-directory: packages/amodal-embed
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: npm publish --access public --provenance

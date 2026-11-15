@@ -704,3 +704,5 @@ One question, in order:
 
 A new tracking document is never the answer. That is how there came to be
 thirteen.
+
+| AMODAL-001 | Amodal embedded package with restricted networking | In progress | docs/104-AMODAL-EMBED.md |

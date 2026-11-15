@@ -1,0 +1,34 @@
+{
+  "name": "@amodalai/opencalc",
+  "version": "0.1.0",
+  "type": "module",
+  "license": "Apache-2.0",
+  "exports": {
+    ".": {
+      "types": "./index.d.mts",
+      "import": "./index.mjs"
+    },
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "dist",
+    "index.mjs",
+    "index.d.mts",
+    "LICENSE",
+    "NOTICE",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "node build.mjs",
+    "test": "node --test security.test.mjs"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/amodalai/opencalc.git",
+    "directory": "packages/amodal-embed"
+  },
+  "description": "Amodal embedded spreadsheet editor and matching OpenCalc engine"
+}

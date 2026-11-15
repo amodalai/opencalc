@@ -69,3 +69,5 @@ __pycache__/
 
 # The desktop bundle's staged web assets (desktop/build.rs, TAURI-021).
 desktop/web-dist/
+
+/packages/amodal-embed/dist/
