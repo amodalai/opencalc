@@ -424,7 +424,7 @@ fn text_at(at: Line, content: String, align: Align, color: &str) -> PaintItem {
         bold: at.bold,
         italic: false,
         font_name: None,
-        font_pt: Some(pt(at.size_px)),
+        font_pt: Some(pt(at.size_px / PX)),
     }
 }
 
@@ -1649,5 +1649,25 @@ fn push_category_labels(
             CHART_MUTED,
         ));
         i += every;
+    }
+}
+
+#[cfg(test)]
+mod amodal_text_units_tests {
+    use super::*;
+
+    #[test]
+    fn chart_line_height_is_twips_but_font_size_is_points() {
+        let item = text_at(
+            line(0.0, 0.0, 100.0 * PX, 12.0 * PX),
+            "Revenue".into(),
+            Align::Left,
+            CHART_FG,
+        );
+        let PaintItem::Text { rect, font_pt, .. } = item else {
+            panic!("expected text")
+        };
+        assert_eq!(rect.h, 180);
+        assert_eq!(font_pt, Some(9.0));
     }
 }

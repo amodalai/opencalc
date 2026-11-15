@@ -44,7 +44,7 @@ await writeFile(
       cwd: root,
       encoding: "utf8",
     }).trim(),
-    version: "0.1.0",
+    version: JSON.parse(await readFile(new URL("./package.json", import.meta.url), "utf8")).version,
   }),
 );
 for (const name of ["LICENSE", "NOTICE"]) {

@@ -23,3 +23,12 @@ The Amodal package is released independently with `amodal-v<version>` tags using
 `.github/workflows/release-amodal.yml` and the `release` environment's `NPM_TOKEN`.
 The workflow builds matching engine bindings, checks the restrictions and a
 formula save/reopen, and publishes only `@amodalai/opencalc` with provenance.
+
+## Headless chart text units
+
+The live verification exposed chart labels at 15× their intended size in PNG
+previews. Chart layout passes twip dimensions into `Line.size_px`, whereas
+`text_at` treated that value as CSS pixels when producing `font_pt`. Convert
+through `PX` before pixel-to-point conversion; retain twips for rectangle geometry.
+Add a direct display-list regression asserting 12px text uses 9pt and 180-twip
+line height, then verify the same chart through the rebuilt headless renderer.
